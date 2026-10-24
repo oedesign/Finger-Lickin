@@ -1,7 +1,9 @@
 # Finger-Lickin Database Schema
 
-**Status:** Proposed logical model; exact PostgreSQL DDL and provider-dependent
-fields are deferred until launch decisions are confirmed.
+**Status:** Phase 2 is in progress. The versioned migration implements the
+profile, restaurant, membership, and menu foundation described below. Orders,
+addresses, payments, delivery, administrator permissions, and other workflows
+remain deferred where required business and authorization decisions are open.
 
 ## 1. Design rules
 
@@ -22,16 +24,56 @@ fields are deferred until launch decisions are confirmed.
   exercised with anonymous, customer, restaurant-member, and administrator
   test identities.
 - Tables below describe logical entities and important fields, not final
-  column names or a complete migration.
+  column names or a complete migration unless explicitly marked implemented.
+
+## 1.1 Phase 2 database foundation
+
+Migration `supabase/migrations/20261013175000_phase_2_database_foundation.sql`
+implements `profiles`, `restaurants`, `restaurant_memberships`,
+`menu_categories`, and `menu_items`. It adds UUID keys, Auth/catalog foreign
+keys, restaurant-slug and menu-order constraints, explicit three-letter
+currency codes and non-negative integer minor-unit menu prices, and
+`timestamptz` creation/update fields. Menu items use a composite
+`(category_id, restaurant_id)` foreign key so a restaurant cannot attach an
+item to another restaurant's category.
+
+All five tables have RLS enabled. Customers may select/create/update their own
+profile; they cannot alter its identity or delete it through the Data API.
+Users can read only their own membership rows and cannot create, change, or
+revoke memberships. Anonymous and authenticated users can read active
+restaurants and published items in active categories; sold-out published
+items remain visible with their availability flag. An active restaurant
+membership additionally permits reading that restaurant's non-public record,
+inactive categories, and unpublished items. Revoked memberships grant no
+restaurant/catalog access. Catalog and restaurant writes are denied to
+client-facing roles pending a trusted provisioning and partner-management
+workflow.
+
+The `public_restaurants`, `public_menu_categories`, and `public_menu_items`
+views are narrow, `security_invoker` projections. Public columns are limited
+to catalog information intended for browsing; private/profile tables are not
+granted to anonymous users. The views do not bypass table RLS. No
+`SECURITY DEFINER` function or service-role operation is introduced. The
+private-schema `updated_at` trigger function uses a fixed `pg_catalog` search
+path, does not run with elevated privileges, and is not exposed by the Data
+API. Client roles receive no usage or execute grants on the private
+schema/function; trigger execution continues through its trigger binding.
+
+This is deliberately not a complete production schema. The migration does not
+create any user-selectable role, administrator grant, address, order, payment,
+delivery, or audit record, and it does not add policies that imply those
+workflows are authorized. See `docs/DECISIONS.md` for blocking decisions and
+the remaining model sections for deferred requirements.
 
 ## 2. Identity, role, and restaurant tenancy
 
 ### `profiles`
 
-- `user_id` UUID primary key and FK to `auth.users(id)`.
-- Display name, contact details needed for the account, locale/preferences if
-  adopted, timestamps, and account status.
-- Private fields are not exposed through public catalog queries.
+- **Implemented:** `user_id` UUID primary key and cascading FK to
+  `auth.users(id)`; optional display name; creation/update timestamps.
+- Contact details, locale/preferences, and account status are not included
+  because their requirements are not defined.
+- A profile can be read or edited only by its owning authenticated user.
 - Do not duplicate auth credentials or store passwords.
 
 ### `customer_profiles`
@@ -51,20 +93,26 @@ fields are deferred until launch decisions are confirmed.
 
 ### `restaurants`
 
-- Name, slug, public description, contact fields, address/location reference,
-  timezone, status, service hours/configuration, availability, published
-  imagery, onboarding source, timestamps.
-- Status check distinguishes draft/pending approval/active/suspended/closed.
+- **Implemented:** UUID ID, unique lowercase slug, name, public description,
+  time zone, `draft`/`pending`/`active`/`suspended`/`closed` status, and
+  creation/update timestamps.
+- Contact fields, address/location, hours, operational availability, imagery,
+  and onboarding source are deferred.
 - Unique slug; only approved/published/active records are public.
-- Provider-specific service coverage is represented through a separately
-  decided coverage model rather than an invented geospatial provider contract.
+- In this foundation, only `active` is public. Restaurant activation is not
+  client-writable; who may approve or activate a restaurant remains unresolved.
+- Provider-specific service coverage is deferred rather than represented by
+  an invented geospatial provider contract.
 
 ### `restaurant_memberships`
 
-- `restaurant_id` FK, `user_id` FK, membership state, role/permission
-  assignment, inviter/actor, created/updated/revoked timestamps.
-- Unique active membership by restaurant/user as appropriate.
-- Membership and permissions are checked server-side and by RLS predicates.
+- **Implemented:** UUID ID, restaurant and Auth-user FKs, `active`/`revoked`
+  state, creation/update timestamps, and nullable revocation time. There is
+  one retained membership row per restaurant/user pair.
+- No owner/staff role, permission set, inviter, or administrator grant is
+  present. Membership rows cannot be inserted or changed by client roles.
+- Active membership is checked against the database relation in RLS; a
+  user-supplied role or restaurant ID does not confer access.
 
 ### `admin_memberships` or equivalent protected role assignment
 
@@ -82,17 +130,25 @@ fields are deferred until launch decisions are confirmed.
 
 ### `menu_categories`
 
-- Restaurant FK, name, description/order, active/public state, timestamps.
-- Composite ordering/index by restaurant and display order.
+- **Implemented:** UUID ID, restaurant FK, name, optional description,
+  non-negative display order, active flag, and creation/update timestamps.
+- Public rows require an active restaurant and active category. A member of
+  that restaurant can also read inactive categories.
+- An index orders categories by restaurant, display order, and ID.
 
 ### `menu_items`
 
-- Restaurant and category FKs; name, description, image reference, base price,
-  currency, availability/sold-out state, display order, timestamps, optional
-  catalog version.
-- Price non-negative; category and restaurant ownership must agree.
-- Public queries exclude unpublished/inactive records. Enforce unique or
-  searchable indexes based on selected search implementation.
+- **Implemented:** UUID ID, restaurant and category references, name,
+  optional description, non-negative `bigint` base price in integer minor
+  units, explicit uppercase three-letter currency code, published and
+  available flags, non-negative display order, and creation/update
+  timestamps. The composite category FK enforces matching restaurant
+  ownership.
+- Public reads exclude unpublished items, inactive categories, and
+  non-active restaurants. Published sold-out items remain visible.
+- No currency set, currency exponent, search strategy, or price calculation
+  is implied by the three-letter format check.
+- Image references, modifiers, and catalog versioning are deferred.
 
 ### `modifier_groups` and `modifier_options`
 
@@ -115,7 +171,7 @@ fields are deferred until launch decisions are confirmed.
 
 ### `customer_addresses`
 
-- Customer user FK; recipient/contact fields, address lines, locality,
+- Deferred. Customer user FK; recipient/contact fields, address lines, locality,
   postal/region/country fields needed by the confirmed market, optional
   coordinates only with explicit privacy/retention rules, delivery notes,
   label/default flag, validation/serviceability metadata, timestamps.
@@ -148,7 +204,7 @@ fields are deferred until launch decisions are confirmed.
 
 ### `orders`
 
-- Unique public reference; customer FK (nullable only if approved guest
+- Deferred. Unique public reference; customer FK (nullable only if approved guest
   checkout); restaurant FK; address/contact snapshot appropriate for fulfillment;
   currency; immutable item subtotal, discount, delivery fee, service/platform
   fee, applicable tax/tip, grand total; policy versions; order, payment,
@@ -199,7 +255,7 @@ fields are deferred until launch decisions are confirmed.
 
 ### `payment_attempts`
 
-- Order FK; provider, unique internal/provider reference, expected amount and
+- Deferred. Order FK; provider, unique internal/provider reference, expected amount and
   currency, status (`created`, `initializing`, `pending`, `succeeded`,
   `failed`, `cancelled`, `unknown`, `refunded` as a summary), provider
   transaction ID, safe metadata, timestamps.
@@ -357,10 +413,23 @@ policies through the same access paths used in production, including API
 routes, server actions, Storage, and Realtime. Service-role access bypasses RLS
 and therefore requires an independently enforced server authorization check.
 
+Implemented Phase 2 policy coverage is limited to profiles, restaurants,
+restaurant memberships, menu categories, and menu items as described in
+section 1.1. Customer addresses, orders, payment/delivery records,
+administrator permissions, Storage, and Realtime do not yet exist in the
+migration. The matrix rows for those entities are targets, not claims of
+implemented or tested policy behavior.
+
 ## 11. Migration and lifecycle requirements
 
 - Create migrations in source control and run them in CI against a clean
-  database.
+  database. Local migration and test commands are documented in
+  `supabase/README.md`.
+- Migration files use `YYYYMMDDHHMMSS_description.sql` under
+  `supabase/migrations/`. Use `supabase db reset` only with a local Supabase
+  stack; it drops and recreates the local database before replaying migrations.
+- There is no production link, seed data, or hosted-project migration in this
+  phase. Synthetic pgTAP fixtures are transaction-scoped and rolled back.
 - Seed only non-sensitive test fixtures; never production credentials or
   personal data.
 - Use expand/contract migrations for production changes and avoid destructive

@@ -1,5 +1,8 @@
 # Development foundation
 
+For a fresh-machine setup, see the
+[transfer guide](TRANSFER_TO_NEW_COMPUTER.md).
+
 ## Environment variables
 
 The root layout validates optional public Supabase configuration at startup.
@@ -12,19 +15,63 @@ credentials, or webhook secrets in browser-visible variables.
 
 ## Testing
 
-- Vitest and Testing Library cover the rendered foundation and environment
-  validation without requiring a database.
-- Playwright covers a production-server browser smoke test. Install Chromium
-  with `npx playwright install chromium` after dependencies are installed.
+- Vitest and Testing Library cover the design preview, shared control
+  semantics, accessible form feedback, and responsive workspace shell markup
+  without requiring a database.
+- Playwright checks the built production app, keyboard navigation, modal
+  behavior, five viewport widths, horizontal overflow, and axe-core WCAG 2.1
+  A/AA rules at mobile/desktop widths and with the dialog open.
+- Install Chromium once with `npx playwright install chromium` after
+  dependencies are installed. Automated accessibility scans supplement, but
+  do not replace, screen-reader and visual manual review.
 - CI builds the production app before running the browser test.
-- Database and RLS tests are deferred until a reviewed migration and controlled
-  local Supabase environment exist.
+- Database and RLS tests run separately from npm tests with `supabase test db`
+  against the controlled local Supabase stack.
 
-## Supabase boundary
+## Local Supabase database workflow
 
-No project credentials, local CLI configuration, database schema, or provider
-integration are present. Supabase CLI setup and migrations must be completed
-in a later approved phase; do not connect this foundation to production.
+The repository contains local CLI configuration, versioned SQL migrations in
+`supabase/migrations/`, and transactional pgTAP tests in
+`supabase/tests/database/`. The supported migration filename format is
+`YYYYMMDDHHMMSS_description.sql`; use `supabase migration new
+descriptive_change` to create the next file.
+
+Install the Supabase CLI from its
+[official instructions](https://supabase.com/docs/guides/cli) and run Docker
+Desktop. From the repository root:
+
+```powershell
+supabase --version
+supabase start
+supabase db reset
+supabase test db
+```
+
+`supabase db reset` drops and rebuilds the local development database and
+replays every migration. It is destructive to local data; use it only against
+the local CLI stack, never a hosted project. `supabase stop` stops that local
+stack. Do not link this phase to production.
+
+Database tests use synthetic identities and rollback their fixtures. They
+cover only the schema and policies currently implemented. There is no
+development seed because restaurant activation, account/restaurant
+provisioning, and membership grants lack approved authorities.
+
+## Database authorization boundary
+
+The current migration establishes profiles, restaurants, restaurant
+memberships, categories, and menu items. Client-facing roles can read only
+their own profile/membership and permitted catalog data; they cannot create
+restaurants, grant memberships, activate a restaurant, or write menus. No
+order, address, payment, delivery, administrator, or Storage policy exists.
+
+Restaurant onboarding, membership changes, catalog writes, future checkout
+and order creation, price calculations, payment verification/refunds,
+delivery calls, and administrator/financial operations must later be
+implemented in trusted server-side workflows with independent authorization.
+Never expose a Supabase service-role key in browser code, and never treat it
+as a replacement for server-side authorization. Unresolved prerequisites are
+tracked in `docs/DECISIONS.md`.
 
 ## Dependency audit note
 

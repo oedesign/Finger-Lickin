@@ -18,7 +18,8 @@ the proposed architecture.
 | D-008 | Historical orders retain purchased item names, options, quantities, and prices. | Requires immutable order snapshots independent of mutable menus. |
 | D-009 | Restaurant commission, platform fees, and settlement policies are configurable. | Requires effective-dated rules and per-order financial snapshots. |
 | D-010 | Production payment or delivery success must never be simulated. | Test/sandbox mode must be visibly separated from live state. |
-| D-011 | Use whole-project documentation only for this phase; no product feature implementation is included. | The project directory was found empty and is not a Git repository. |
+| D-011 | Phase 1 documented the whole-project plan without implementing product workflows. | Product behavior remains governed by the approved specifications and unresolved decisions. |
+| D-012 | Phase 2 provisions only a least-privilege database foundation; browser-facing roles cannot create restaurants, grant memberships, or write catalog records. | No restaurant-onboarding or permission-assignment authority is confirmed; keep those writes closed until a trusted server-side provisioning flow is designed. |
 
 ## Unresolved launch decisions requiring owner approval
 
@@ -45,6 +46,14 @@ must not launch the dependent behavior without a decision.
 | U-016 | Privacy, retention, data residency, and legal obligations | Applicable laws, subprocessors, access/deletion requests, retention periods for financial/audit/support data, backup geography and incident reporting. | Production data handling and deployment |
 | U-017 | Operational support model | On-call/coverage, provider escalation, manual delivery/payment exception path, incident ownership, support channels. | Launch readiness |
 | U-018 | Performance, traffic, availability, and recovery targets | Expected load, performance budgets, uptime objectives, RPO/RTO, monitoring region and budget. | Hosting, queue, database sizing |
+| U-019 | Administrator provisioning and permission matrix | Define who may grant/revoke admin access, available permissions, approval/audit requirements, and separation of financial privileges. No administrator table, policy, or self-grant path is implemented. | Administrator authorization, support, finance, production operations |
+| U-020 | Restaurant creation, approval, ownership, and membership provisioning | Define trusted initiators, owner/staff roles and permissions, invitation/acceptance, revocation, review authority, and recovery when the final owner leaves. Current client roles cannot create restaurants or modify memberships/catalog. | Partner onboarding, restaurant activation, catalog management |
+| U-021 | Public restaurant/menu publication meaning | Confirm which review, availability, and publishing checks are prerequisites for the `active` state and public visibility. The database currently exposes only `active` restaurants, active categories, and published items; activation has no client write path. | Public discovery and restaurant onboarding |
+| U-022 | Currency set and exponent rules | Confirm supported currency codes and each currency's minor-unit exponent, rounding, and provider representation. Menu prices store non-negative integer minor units and a three-letter uppercase code, but the format check does not validate ISO membership or exponent. | Price display, checkout, payments, financial reporting |
+| U-023 | Customer-address fields, access, and retention | Define required address/contact fields for the launch region, restaurant fulfillment access, precision, deletion, and retention. No address table exists. | Address management, checkout, order fulfillment |
+| U-024 | Order creation, customer/restaurant read scope, and lifecycle | Define guest eligibility, immutable financial/address snapshots, customer access, restaurant operational fields, data minimization, and validated state transitions. No order or order-item table/policy exists. | Checkout, order history, partner operations |
+| U-025 | Payment/delivery database access and server authority | After provider/currency and operational policies are approved, define trusted writers, customer-safe status projections, restaurant visibility, webhook inbox access, and retention. No payment or delivery record/function/policy exists. | Payment, delivery, refunds, reconciliation |
+| U-026 | Personal-data and financial-record deletion/retention | Define retention, deletion/anonymization, legal hold, backups, and the effect of deleting Auth users on restaurant and financial records. Profile deletion currently cascades; deleting a user with a membership is restricted pending approved transfer/retention behavior. No order/financial history exists. | Production identity lifecycle and compliance |
 
 ### Decisions to request first
 

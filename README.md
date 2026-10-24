@@ -1,15 +1,23 @@
 # Finger-Lickin
 
 Finger-Lickin is a multi-restaurant food ordering and delivery marketplace.
-This repository currently contains the Phase 2 application foundation only;
-customer ordering, restaurant operations, administration, authentication,
-database migrations, payments, and delivery booking are not implemented.
+This repository currently contains the application foundation and Phase 1
+design system only. Customer ordering, restaurant operations, administration,
+authentication, database migrations, payments, and delivery booking are not
+implemented.
 
 ## Project status
 
 - Phase 1 product, architecture, database, security, decisions, and roadmap
-  documents are preserved below.
+  documents are maintained alongside the implementation.
 - The application uses Next.js App Router, TypeScript, Tailwind CSS, and npm.
+- A partial Phase 2 Supabase database foundation is version-controlled under
+  `supabase/`; customer ordering, restaurant operations, administrator
+  workflows, payment/delivery records, and authentication UI are not
+  implemented.
+- Shared accessible UI primitives and separate customer, partner, and
+  administrator shell patterns are available for future routes.
+- The home page is a design preview, not a live ordering service.
 - Supabase credentials are not configured and no production database is
   connected.
 - Payment processing and delivery-provider integrations are not enabled.
@@ -17,8 +25,8 @@ database migrations, payments, and delivery booking are not implemented.
 ## Requirements
 
 - Node.js 24 LTS (npm is included).
-- Supabase CLI only if you choose to work on local Supabase later; it is not
-  required to run this foundation.
+- Supabase CLI and Docker Desktop only if you choose to run database
+  migrations and policy tests locally; neither is required to run the web app.
 
 ## Install and run
 
@@ -40,6 +48,7 @@ npm run format:check
 npm run lint
 npm run typecheck
 npm test
+npm run test:e2e
 npm run build
 ```
 
@@ -61,12 +70,26 @@ Actions workflow installs Chromium and runs this test after the build.
 
 ## Supabase preparation
 
-The Supabase CLI is not currently installed and no Supabase project is linked.
-To use a local project later, install the Supabase CLI using its official
-installation instructions, run `supabase init` in this project, and use
-`supabase start` after reviewing the generated local configuration. No CLI
-configuration or database schema is included in this phase. Do not link or
-modify a production project.
+The committed `supabase/config.toml` and ordered migration support local
+development only. To apply migrations and run RLS tests, install the Supabase
+CLI using its
+[official instructions](https://supabase.com/docs/guides/cli), install/start
+Docker Desktop, then run these commands from the repository root:
+
+```powershell
+supabase --version
+supabase start
+supabase db reset
+supabase test db
+```
+
+`supabase db reset` destructively recreates the local database before
+reapplying migrations. Never point reset commands at a hosted project. No
+production project is linked and no hosted project should be connected for
+this phase. Migration naming, clean reset, test scope, and trusted-server
+boundaries are described in [supabase/README.md](supabase/README.md).
+Application scripts are unchanged; run database tests separately with
+`supabase test db`.
 
 ## Project documentation
 
@@ -77,7 +100,9 @@ modify a production project.
 - [Security requirements](SECURITY.md)
 - [Confirmed and unresolved decisions](docs/DECISIONS.md)
 - [Development and integration boundaries](docs/DEVELOPMENT.md)
+- [Design system and shared UI](docs/DESIGN_SYSTEM.md)
 - [Supabase setup notes](supabase/README.md)
+- [Transfer and setup on a new computer](docs/TRANSFER_TO_NEW_COMPUTER.md)
 
 ## Initial structure
 
@@ -85,13 +110,15 @@ modify a production project.
 .github/workflows/       CI checks
 docs/                    Phase 1 decisions and development notes
 src/app/                 Next.js routes, layout, styles, and shell tests
-src/components/ui/       Reusable accessible UI primitives
+src/components/ui/       Shared accessible controls and surface primitives
+src/components/shared/   Brand, responsive headers, and workspace shells
 src/features/            Reserved for future domain modules
 src/lib/                 Shared helpers and environment validation
 src/server/              Reserved for server-only business logic
 src/types/               Reserved for shared types
-supabase/migrations/     Reserved for reviewed future migrations
-supabase/tests/          Reserved for future database and policy tests
+supabase/config.toml     Local Supabase CLI configuration
+supabase/migrations/     Ordered, reviewed SQL migrations
+supabase/tests/database/ pgTAP schema and RLS policy tests
 tests/e2e/               Playwright browser smoke test
 ```
 

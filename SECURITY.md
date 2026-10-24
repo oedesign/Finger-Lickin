@@ -1,7 +1,9 @@
 # Finger-Lickin Security Requirements
 
 **Status:** Security baseline for a planned application; not evidence of a
-completed security review or implemented controls.
+completed security review. The initial Phase 2 migration implements only the
+profile, restaurant, membership, and catalog controls described below; its
+database tests have not yet run in this environment.
 
 ## 1. Security objectives
 
@@ -43,6 +45,18 @@ Supabase, and external providers.
 - Supabase RLS is enabled for all client-exposed tables. Test policies using
   anonymous, customer A/B, members in restaurant A/B, revoked staff, and
   constrained administrator identities.
+- Current database policies cover profiles, restaurant memberships,
+  restaurants, categories, and items. There are no address, order, payment,
+  delivery, administrator-membership, audit, or Storage tables/policies yet.
+- Client roles cannot create or update restaurants, grant/revoke memberships,
+  or write catalog data. A future trusted server-side workflow must authorize
+  these operations; no self-service owner/admin bootstrap is provided.
+- Public catalog views use `security_invoker` and expose only the catalog
+  projection. Anonymous clients have no profile or membership table access.
+- The only private-schema function is a non-`SECURITY DEFINER` timestamp
+  trigger; it uses a fixed `pg_catalog` search path, performs no privileged
+  reads/writes, receives no client-role usage/execute grants, and is not
+  exposed through the Supabase Data API.
 - Supabase service-role keys bypass RLS. Keep them server-only; require
   application-level authorization and narrow use cases for every privileged
   operation.

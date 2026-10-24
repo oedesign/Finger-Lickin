@@ -1,6 +1,10 @@
 # Finger-Lickin Product Specification
 
-**Status:** Phase 1 specification; not yet implemented  
+**Status:** Product requirements remain planned; the Phase 1 application
+foundation and a partial Phase 2 database foundation are present. No customer
+ordering, authentication flow, restaurant operations, or provider integration
+is implemented.
+
 **Product:** Finger-Lickin  
 **Product type:** Multi-restaurant food ordering and delivery marketplace
 
@@ -188,6 +192,11 @@ post-launch polish.
 - PostgreSQL migrations are versioned and reviewed. Supabase Row Level Security
   (RLS) is enabled for exposed tables; policies are tested with authenticated,
   anonymous, cross-customer, cross-restaurant, and administrator cases.
+- The current Phase 2 migration implements profiles, restaurants,
+  memberships, menu categories, and menu items only. The policy tests cover
+  this implemented subset. Addresses, orders, payments, delivery, audit,
+  administrator permissions, and Storage policies are deferred; no launch or
+  administrator authorization is implied.
 - Use server-only database/service credentials. Do not expose Supabase service
   role keys or payment/delivery secrets to browser bundles.
 - Cart pricing uses canonical active menu data and versioned policy/config.

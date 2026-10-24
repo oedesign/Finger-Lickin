@@ -1,11 +1,12 @@
 # Finger-Lickin Implementation Roadmap
 
-The phases are ordered by dependency. All work is future work; Phase 1 produced
-specification documents only. A phase is complete only when its tests and
-acceptance criteria pass and the definition of done is satisfied. Provider,
-market, and financial decisions in [docs/DECISIONS.md](docs/DECISIONS.md)
-block the affected production behavior; they must not be filled with mock
-successes.
+The phases are ordered by dependency. The Phase 1 product and technical
+specifications are preserved, and application-foundation and shared-UI
+implementation now exists in the repository. Phase completion still requires
+its tests, acceptance criteria, and definition of done to be satisfied.
+Provider, market, and financial decisions in
+[docs/DECISIONS.md](docs/DECISIONS.md) block the affected production behavior;
+they must not be filled with mock successes.
 
 ## Phase 0 — Project foundation and development tooling
 

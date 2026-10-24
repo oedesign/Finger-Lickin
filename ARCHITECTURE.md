@@ -1,6 +1,8 @@
 # Finger-Lickin Architecture
 
-**Status:** Proposed architecture for Phase 1; no application code exists yet.
+**Status:** Proposed architecture; the application foundation, initial shared
+UI, and a partial Phase 2 database foundation are present. Domain modules and
+integrations remain unimplemented.
 
 ## 1. Architectural decisions
 
@@ -237,6 +239,14 @@ fallback; do not fabricate a booking.
   mutations.
 - Avoid broad realtime table access; subscribe only to the minimum status
   records and re-check access on reconnect.
+- The current migration provides RLS-scoped profiles and restaurant/catalog
+  reads, but leaves restaurant, membership, and catalog writes unavailable to
+  client roles. It creates no administrator, order, address, payment, delivery,
+  or audit authorization path; implement those only after their permissions
+  and business rules are resolved.
+- Public restaurant and menu views are narrow `security_invoker` projections.
+  They do not bypass base-table RLS, and anonymous users receive no profile or
+  membership table privileges.
 
 The proposed entity model and key constraints are in
 [DATABASE_SCHEMA.md](DATABASE_SCHEMA.md).

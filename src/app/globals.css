@@ -1,26 +1,114 @@
 @import "tailwindcss";
 
 :root {
-  --canvas: #fffaf2;
-  --ink: #29231f;
-  --muted: #6e6259;
-  --surface: #ffffff;
-  --line: #eadfd3;
-  --brand: #a53f1b;
-  --brand-dark: #7f2e13;
-  --focus: #c35020;
-  --font-body: Arial, Helvetica, sans-serif;
+  color-scheme: light;
+  --color-canvas: #faf7f0;
+  --color-surface: #ffffff;
+  --color-surface-soft: #f3eee4;
+  --color-ink: #252821;
+  --color-muted: #625b52;
+  --color-subtle: #777067;
+  --color-border: #e5ddd0;
+  --color-brand-50: #fbf0e9;
+  --color-brand-100: #f5dace;
+  --color-brand-200: #eab8a2;
+  --color-brand-300: #dc8c6d;
+  --color-brand-400: #c85f3e;
+  --color-brand-500: #a83d20;
+  --color-brand-600: #91341d;
+  --color-brand-700: #752a19;
+  --color-brand-800: #5c2419;
+  --color-brand-900: #421d17;
+  --color-leaf-50: #eff4ed;
+  --color-leaf-100: #dde8d9;
+  --color-leaf-200: #c1d2b9;
+  --color-leaf-300: #9ab18e;
+  --color-leaf-400: #718d68;
+  --color-leaf-500: #526f4a;
+  --color-leaf-600: #40593b;
+  --color-leaf-700: #344831;
+  --color-leaf-800: #2b3b29;
+  --color-leaf-900: #232f23;
+  --color-spice-100: #fff0c7;
+  --color-spice-300: #f7d583;
+  --color-spice-500: #e8ac40;
+  --color-spice-700: #78520b;
+  --color-success-surface: #eaf4eb;
+  --color-success-ink: #285b36;
+  --color-warning-surface: #fff3d6;
+  --color-warning-ink: #744f05;
+  --color-danger-surface: #fcecea;
+  --color-danger-ink: #922f28;
+  --color-info-surface: #eaf3f7;
+  --color-info-ink: #24536a;
+  --color-focus-ring: #175a83;
+  --type-body-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  --type-display-family: Georgia, "Times New Roman", serif;
+  --container-page: 78rem;
+  --container-reading: 48rem;
+  --section-space: clamp(4rem, 8vw, 7rem);
 }
 
 @theme inline {
-  --color-canvas: var(--canvas);
-  --color-ink: var(--ink);
-  --color-muted: var(--muted);
-  --color-surface: var(--surface);
-  --color-line: var(--line);
-  --color-brand: var(--brand);
-  --color-brand-dark: var(--brand-dark);
-  --font-sans: var(--font-body);
+  --color-canvas: var(--color-canvas);
+  --color-surface: var(--color-surface);
+  --color-surface-soft: var(--color-surface-soft);
+  --color-ink: var(--color-ink);
+  --color-muted: var(--color-muted);
+  --color-subtle: var(--color-subtle);
+  --color-border: var(--color-border);
+  --color-brand-50: var(--color-brand-50);
+  --color-brand-100: var(--color-brand-100);
+  --color-brand-200: var(--color-brand-200);
+  --color-brand-300: var(--color-brand-300);
+  --color-brand-400: var(--color-brand-400);
+  --color-brand-500: var(--color-brand-500);
+  --color-brand-600: var(--color-brand-600);
+  --color-brand-700: var(--color-brand-700);
+  --color-brand-800: var(--color-brand-800);
+  --color-brand-900: var(--color-brand-900);
+  --color-leaf-50: var(--color-leaf-50);
+  --color-leaf-100: var(--color-leaf-100);
+  --color-leaf-200: var(--color-leaf-200);
+  --color-leaf-300: var(--color-leaf-300);
+  --color-leaf-400: var(--color-leaf-400);
+  --color-leaf-500: var(--color-leaf-500);
+  --color-leaf-600: var(--color-leaf-600);
+  --color-leaf-700: var(--color-leaf-700);
+  --color-leaf-800: var(--color-leaf-800);
+  --color-leaf-900: var(--color-leaf-900);
+  --color-spice-100: var(--color-spice-100);
+  --color-spice-300: var(--color-spice-300);
+  --color-spice-500: var(--color-spice-500);
+  --color-spice-700: var(--color-spice-700);
+  --color-success-surface: var(--color-success-surface);
+  --color-success-ink: var(--color-success-ink);
+  --color-warning-surface: var(--color-warning-surface);
+  --color-warning-ink: var(--color-warning-ink);
+  --color-danger-surface: var(--color-danger-surface);
+  --color-danger-ink: var(--color-danger-ink);
+  --color-info-surface: var(--color-info-surface);
+  --color-info-ink: var(--color-info-ink);
+  --color-focus-ring: var(--color-focus-ring);
+  --font-sans: var(--type-body-family);
+  --font-display: var(--type-display-family);
+  --text-display: clamp(3.25rem, 7.5vw, 6.8rem);
+  --text-display--line-height: 0.98;
+  --text-display--letter-spacing: -0.055em;
+  --text-section: clamp(2.1rem, 4vw, 3.5rem);
+  --text-section--line-height: 1.08;
+  --text-section--letter-spacing: -0.04em;
+  --text-body-lg: 1.125rem;
+  --text-body-lg--line-height: 1.75rem;
+  --spacing-page: clamp(1.25rem, 4vw, 2.5rem);
+  --spacing-section: var(--section-space);
+  --radius-card: 1.25rem;
+  --radius-panel: 1.75rem;
+  --shadow-card: 0 1px 2px rgb(37 40 33 / 5%), 0 14px 36px rgb(37 40 33 / 6%);
+  --shadow-panel: 0 22px 60px rgb(20 31 24 / 18%);
+  --breakpoint-3xl: 120rem;
 }
 
 * {
@@ -29,24 +117,96 @@
 
 html {
   min-height: 100%;
-  background: var(--canvas);
+  background: var(--color-canvas);
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
 }
 
 body {
   min-height: 100vh;
   margin: 0;
-  color: var(--ink);
-  font-family: var(--font-body);
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--type-body-family);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a,
+summary {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
 ::selection {
   color: #ffffff;
-  background: var(--brand);
+  background: var(--color-brand-700);
 }
 
 :focus-visible {
-  outline: 3px solid var(--focus);
+  outline: 3px solid var(--color-focus-ring);
   outline-offset: 3px;
+}
+
+.page-container {
+  width: min(
+    calc(100% - var(--spacing-page) - var(--spacing-page)),
+    var(--container-page)
+  );
+  margin-inline: auto;
+}
+
+.reading-container {
+  width: min(
+    calc(100% - var(--spacing-page) - var(--spacing-page)),
+    var(--container-reading)
+  );
+  margin-inline: auto;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 100;
+  top: 0.75rem;
+  left: 0.75rem;
+  transform: translateY(-160%);
+  border-radius: 0.75rem;
+  background: var(--color-ink);
+  padding: 0.75rem 1rem;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.hero-ornament {
+  position: absolute;
+  border: 1px solid rgb(255 255 255 / 16%);
+  border-radius: 9999px;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
