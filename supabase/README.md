@@ -11,20 +11,21 @@ it does not identify, link, or connect to a hosted Supabase project.
 ## Prerequisites and local setup
 
 - Node.js 24 LTS and npm, as required by the application.
-- The Supabase CLI installed using
-  [the official installation instructions](https://supabase.com/docs/guides/cli).
+- The project-local Supabase CLI, included as a development dependency after
+  `npm ci`. Standalone installation options are in
+  [the official instructions](https://supabase.com/docs/guides/cli).
 - Docker Desktop installed and running.
 
 From the repository root, run:
 
 ```powershell
-supabase --version
-supabase start
-supabase db reset
-supabase test db
+npx supabase --version
+npx supabase start
+npx supabase db reset
+npx supabase test db
 ```
 
-`supabase db reset` drops and recreates the **local** development database,
+`npx supabase db reset` drops and recreates the **local** development database,
 then applies every migration in order. It is destructive to that local
 database; confirm the CLI is operating locally before running it. Do not link
 this repository to production or run reset commands against hosted projects.
@@ -33,14 +34,14 @@ data. No seed is enabled: restaurant activation and membership provisioning
 are intentionally not available until their authority and onboarding rules
 are decided.
 
-To stop local services after development, run `supabase stop`.
+To stop local services after development, run `npx supabase stop`.
 
 ## Migration workflow
 
 Create a new timestamped migration with the CLI:
 
 ```powershell
-supabase migration new descriptive_change
+npx supabase migration new descriptive_change
 ```
 
 Review the generated SQL before use. Keep schema changes in ordered,

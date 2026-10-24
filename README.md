@@ -25,8 +25,9 @@ implemented.
 ## Requirements
 
 - Node.js 24 LTS (npm is included).
-- Supabase CLI and Docker Desktop only if you choose to run database
-  migrations and policy tests locally; neither is required to run the web app.
+- The Supabase CLI is included as a development dependency; Docker Desktop is
+  required only if you choose to run database migrations and policy tests
+  locally. Neither is required to run the web app.
 
 ## Install and run
 
@@ -71,25 +72,24 @@ Actions workflow installs Chromium and runs this test after the build.
 ## Supabase preparation
 
 The committed `supabase/config.toml` and ordered migration support local
-development only. To apply migrations and run RLS tests, install the Supabase
-CLI using its
-[official instructions](https://supabase.com/docs/guides/cli), install/start
-Docker Desktop, then run these commands from the repository root:
+development only. After `npm ci`, the project-local Supabase CLI is available
+through `npx`. Start Docker Desktop, then run these commands from the
+repository root:
 
 ```powershell
-supabase --version
-supabase start
-supabase db reset
-supabase test db
+npx supabase --version
+npx supabase start
+npx supabase db reset
+npx supabase test db
 ```
 
-`supabase db reset` destructively recreates the local database before
+`npx supabase db reset` destructively recreates the local database before
 reapplying migrations. Never point reset commands at a hosted project. No
 production project is linked and no hosted project should be connected for
 this phase. Migration naming, clean reset, test scope, and trusted-server
 boundaries are described in [supabase/README.md](supabase/README.md).
 Application scripts are unchanged; run database tests separately with
-`supabase test db`.
+`npx supabase test db`.
 
 ## Project documentation
 

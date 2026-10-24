@@ -4,9 +4,9 @@
 create synthetic identities and catalog fixtures inside a transaction and
 roll them back; they do not create seeded or privileged user accounts.
 
-With Docker Desktop running and the Supabase CLI installed, run
-`supabase start`, `supabase db reset`, and `supabase test db` from the
-repository root. The RLS tests cover public catalog visibility, customer
+With Docker Desktop running and npm dependencies installed, run
+`npx supabase start`, `npx supabase db reset`, and `npx supabase test db` from
+the repository root. The RLS tests cover public catalog visibility, customer
 profile identity and customer isolation, cross-restaurant access, active
 membership revocation, public-view security options, client self-grant/write
 restrictions, catalog constraints, and the `updated_at` trigger. The test

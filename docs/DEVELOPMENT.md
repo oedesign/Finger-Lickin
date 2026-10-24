@@ -25,32 +25,33 @@ credentials, or webhook secrets in browser-visible variables.
   dependencies are installed. Automated accessibility scans supplement, but
   do not replace, screen-reader and visual manual review.
 - CI builds the production app before running the browser test.
-- Database and RLS tests run separately from npm tests with `supabase test db`
-  against the controlled local Supabase stack.
+- Database and RLS tests run separately from npm tests with `npx supabase
+test db` against the controlled local Supabase stack.
 
 ## Local Supabase database workflow
 
 The repository contains local CLI configuration, versioned SQL migrations in
 `supabase/migrations/`, and transactional pgTAP tests in
 `supabase/tests/database/`. The supported migration filename format is
-`YYYYMMDDHHMMSS_description.sql`; use `supabase migration new
+`YYYYMMDDHHMMSS_description.sql`; use `npx supabase migration new
 descriptive_change` to create the next file.
 
-Install the Supabase CLI from its
-[official instructions](https://supabase.com/docs/guides/cli) and run Docker
+The CLI is included as a development dependency and is available through
+`npx` after `npm ci`; standalone installation options are in the
+[official instructions](https://supabase.com/docs/guides/cli). Run Docker
 Desktop. From the repository root:
 
 ```powershell
-supabase --version
-supabase start
-supabase db reset
-supabase test db
+npx supabase --version
+npx supabase start
+npx supabase db reset
+npx supabase test db
 ```
 
-`supabase db reset` drops and rebuilds the local development database and
+`npx supabase db reset` drops and rebuilds the local development database and
 replays every migration. It is destructive to local data; use it only against
-the local CLI stack, never a hosted project. `supabase stop` stops that local
-stack. Do not link this phase to production.
+the local CLI stack, never a hosted project. `npx supabase stop` stops that
+local stack. Do not link this phase to production.
 
 Database tests use synthetic identities and rollback their fixtures. They
 cover only the schema and policies currently implemented. There is no
