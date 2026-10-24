@@ -1,10 +1,9 @@
 # Finger-Lickin
-
 Finger-Lickin is a multi-restaurant food ordering and delivery marketplace.
 This repository currently contains the application foundation and Phase 1
 design system only. Customer ordering, restaurant operations, administration,
 authentication, database migrations, payments, and delivery booking are not
-implemented.
+implemented
 
 ## Project status
 
